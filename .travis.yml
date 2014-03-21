@@ -10,4 +10,4 @@ install:
 script:
   - mono --runtime=v4.0.30319 nuget.exe restore
   - xbuild NHibernateBootstrap.sln
-#  - nunit-console Tests/UnitTests/bin/Debug/UnitTests.dll
+##  - nunit-console Tests/UnitTests/bin/Debug/UnitTests.dll
