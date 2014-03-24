@@ -24,6 +24,12 @@ namespace NHibernateBootstrap
             _configuration = Fluently.Configure()
                 .Database(config)
                 .Mappings(m => m.AutoMappings.Add(_model));
+
+            Fluently.Configure().
+                Database(config).
+                Mappings(m => m.AutoMappings.Add(_model)).
+                ExposeConfiguration(cfg => new SchemaUpdate(cfg).Execute(false, true)).
+                BuildConfiguration();
         }
 
         public static void SetupMySql<T>(string connectionString)
@@ -51,6 +57,12 @@ namespace NHibernateBootstrap
             _configuration
                 .ExposeConfiguration(BuildSchema)
                 .BuildConfiguration();
+
+
+
+
+
+
         }
 
         private static void BuildSchema(Configuration config)
