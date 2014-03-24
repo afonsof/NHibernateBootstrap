@@ -8,7 +8,7 @@ module.exports = function(grunt) {
   
     nugetpush: {
         dist: {
-            src: 'pub/NHibernateBootstrap.<%= pkg.version %>.nupkg'
+            src: 'pub/NHibernateBootstrap.<%= pkg.version %>.0.nupkg'
         }
     },
     
