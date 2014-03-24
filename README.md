@@ -9,14 +9,18 @@ Start a NHibernate Repository application in seconds
 
 #### 1. Setting Up
 
-Create a project and install NHibernateBootstrap using Nuget:
-
+1.1 Create a project and install NHibernateBootstrap using Nuget:
 ```
 PM> Install-Package NHibernateBootstrap
 ```
 
+1.2 Install a Database provider (for example: MySQL)
+```
+PM> Install-Package MySql.Data
+```
+
 #### 2. Create entity classes
-All entity classes must implement IHaveId interface and all properties must be virtual according with the following example:
+All entity classes must implement ``IHaveId`` interface and all properties must be virtual according with the following example:
 ```c#
 public class Person : IHaveId
 {
@@ -48,7 +52,23 @@ public class UnitOfWork: UnitOfWorkBase
 }
 ```
 
-#### 4. Use the UnitOfWork wherever you want, including MVC Controllers:
+#### 4. Call the Setup method in Application Startup. It can be used in global.asax Application_Start method:
+```c#
+protected void Application_Start()
+{
+    var cs = "Server=localhost;Database=myapp;Uid=root;Pwd=root;"
+    NHibernateBuilder.Setup<UnitOfWork>(MySQLConfiguration.Standard.ConnectionString(cs));
+    ...
+}
+```
+In this case we're using a raw connection string, but you can read it in web.config.
+
+You will need to pass to Setup method any class of entities' assembly. Here the created ``UnitOfWork`` class were used.
+
+When the application begins the Database schema will always be created/updated.
+
+
+#### 5. Use the UnitOfWork wherever you want, including in MVC Controllers:
 ```c#
 public class PersonController : Controller
 {
