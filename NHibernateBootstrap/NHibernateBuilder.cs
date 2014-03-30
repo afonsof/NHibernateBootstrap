@@ -13,7 +13,14 @@ namespace NHibernateBootstrap
     public static class NHibernateBuilder
     {
         private static AutoPersistenceModel _model;
-        public static FluentConfiguration Configuration { get; set; }
+
+        private static FluentConfiguration _fluentConfiguration;
+        private static Configuration _configuration;
+
+        public static Configuration Configuration
+        {
+            get { return _configuration; }
+        }
 
         public static void Setup<T>(IPersistenceConfigurer config)
         {
@@ -21,11 +28,9 @@ namespace NHibernateBootstrap
             _model.Conventions.Add(DefaultCascade.All());
             _model.OverrideAll(map => map.IgnoreProperties(x => x.CanWrite == false));
 
-            Configuration = Fluently.Configure()
-                .Database(config)
-                .Mappings(m => m.AutoMappings.Add(_model));
+            _fluentConfiguration = Fluently.Configure().Database(config).Mappings(m => m.AutoMappings.Add(_model));
 
-            Fluently.Configure().
+            _configuration = Fluently.Configure().
                 Database(config).
                 Mappings(m => m.AutoMappings.Add(_model)).
                 ExposeConfiguration(cfg => new SchemaUpdate(cfg).Execute(false, true)).
@@ -54,7 +59,7 @@ namespace NHibernateBootstrap
 
         public static void Reset()
         {
-            Configuration
+            _fluentConfiguration
                 .ExposeConfiguration(BuildSchema)
                 .BuildConfiguration();
 
