@@ -1,6 +1,6 @@
 {
   "name": "NHibernateBootstrap",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Start a NHibernate Repository application in seconds",
   "scripts": {},
   "repository": {
