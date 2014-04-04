@@ -1,4 +1,5 @@
-﻿using FluentNHibernate.Automapping;
+﻿using System.Configuration;
+using FluentNHibernate.Automapping;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using FluentNHibernate.Conventions.Helpers;
@@ -54,20 +55,24 @@ namespace NHibernateBootstrap
 
         public static ISessionFactory GetSessionFactory()
         {
+            AssertSetupWasCalled();
             return Configuration.BuildSessionFactory();
         }
 
         public static void Reset()
         {
+            AssertSetupWasCalled();
             _fluentConfiguration
                 .ExposeConfiguration(BuildSchema)
                 .BuildConfiguration();
+        }
 
-
-
-
-
-
+        private static void AssertSetupWasCalled()
+        {
+            if (_configuration == null || _fluentConfiguration == null)
+            {
+                throw new SetupNotCalledException();
+            }
         }
 
         private static void BuildSchema(Configuration config)
