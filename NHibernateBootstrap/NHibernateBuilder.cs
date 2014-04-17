@@ -1,13 +1,13 @@
-﻿using System.Configuration;
+﻿using System;
 using FluentNHibernate.Automapping;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
-using FluentNHibernate.Conventions.Helpers;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Validator.Cfg;
 using NHibernate.Validator.Engine;
+using MappingConfiguration = FluentNHibernate.Cfg.MappingConfiguration;
 
 namespace NHibernateBootstrap
 {
@@ -23,19 +23,28 @@ namespace NHibernateBootstrap
             get { return _configuration; }
         }
 
-        public static void Setup<T>(IPersistenceConfigurer config)
+        public static void Setup<T>(IPersistenceConfigurer config, Action<AutoPersistenceModel> func = null )
         {
             _model = AutoMap.AssemblyOf<T>().Where(type => typeof(IHaveId).IsAssignableFrom(type));
-            _model.Conventions.Add(DefaultCascade.All());
             _model.OverrideAll(map => map.IgnoreProperties(x => x.CanWrite == false));
 
-            _fluentConfiguration = Fluently.Configure().Database(config).Mappings(m => m.AutoMappings.Add(_model));
+            if (func != null)
+            {
+                func(_model);
+            }
+
+            _fluentConfiguration = Fluently.Configure().Database(config).Mappings(m => AddAutoMapping(m));
 
             _configuration = Fluently.Configure().
                 Database(config).
-                Mappings(m => m.AutoMappings.Add(_model)).
+                Mappings(m => AddAutoMapping(m)).
                 ExposeConfiguration(cfg => new SchemaUpdate(cfg).Execute(false, true)).
                 BuildConfiguration();
+        }
+
+        private static AutoMappingsContainer AddAutoMapping(MappingConfiguration m)
+        {
+            return m.AutoMappings.Add(_model);
         }
 
         public static void SetupMySql<T>(string connectionString)
