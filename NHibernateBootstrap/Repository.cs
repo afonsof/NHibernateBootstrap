@@ -12,9 +12,14 @@ namespace NHibernateBootstrap
             Uow = uow;
         }
 
-        public TEntity Find(int id)
+        public virtual IQueryable<TEntity> AsQueryable()
         {
-            return Uow.Session.Query<TEntity>().FirstOrDefault(e => e.Id == id);
+            return Uow.Session.Query<TEntity>();
+        }
+
+        public virtual TEntity Find(int id)
+        {
+            return AsQueryable().FirstOrDefault(e => e.Id == id);
         }
 
         public virtual void Add(TEntity obj)
@@ -23,26 +28,21 @@ namespace NHibernateBootstrap
             Uow.Session.Save(obj);
         }
 
-        public void Remove(TEntity obj)
-        {
-            Uow.BeginTransaction();
-            Uow.Session.Delete(obj);
-        }
-
         public virtual void Edit(TEntity obj)
         {
             Uow.BeginTransaction();
             Uow.Session.Update(obj);
         }
 
-        public void Remove(int id)
+        public virtual void Remove(TEntity obj)
         {
-            Remove(Find(id));
+            Uow.BeginTransaction();
+            Uow.Session.Delete(obj);
         }
 
-        public IQueryable<TEntity> AsQueryable()
+        public virtual void Remove(int id)
         {
-            return Uow.Session.Query<TEntity>();
+            Remove(Find(id));
         }
     }
 }
