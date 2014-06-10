@@ -38,7 +38,7 @@ namespace NHibernateBootstrap
             _configuration = Fluently.Configure().
                 Database(config).
                 Mappings(m => AddAutoMapping(m)).
-                ExposeConfiguration(cfg => new SchemaUpdate(cfg).Execute(false, true)).
+                //ExposeConfiguration(cfg => new SchemaUpdate(cfg).Execute(false, true)).
                 BuildConfiguration();
         }
 
