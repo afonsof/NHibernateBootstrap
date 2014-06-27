@@ -14,16 +14,20 @@ namespace NHibernateBootstrap
         private static Configuration _configuration;
         private static ISessionFactory _sessionFactory;
 
-        public static void Setup<T>(IPersistenceConfigurer config)
+        public static void Setup<T>(IPersistenceConfigurer config, bool updateSchema = false)
         {
             _model = AutoMap.AssemblyOf<T>().Where(type => typeof(IHaveId).IsAssignableFrom(type));
             _model.OverrideAll(map => map.IgnoreProperties(x => x.CanWrite == false));
 
-            _configuration = Fluently.Configure().
+            var fluentConfiguration = Fluently.Configure().
                 Database(config).
-                Mappings(m => AddAutoMapping(m)).
-                ExposeConfiguration(cfg => new SchemaUpdate(cfg).Execute(false, true)).
-                BuildConfiguration();
+                Mappings(m => AddAutoMapping(m));
+
+            if (updateSchema)
+            {
+                fluentConfiguration = fluentConfiguration.ExposeConfiguration(cfg => new SchemaUpdate(cfg).Execute(false, true));
+            }
+            _configuration = fluentConfiguration.BuildConfiguration();
         }
 
         private static AutoMappingsContainer AddAutoMapping(MappingConfiguration m)
