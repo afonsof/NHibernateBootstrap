@@ -11,5 +11,6 @@ namespace NHibernateBootstrap
         void Edit(TEntity obj);
         void Remove(TEntity obj);
         void Remove(int id);
+        void Commit();
     }
 }

@@ -44,5 +44,10 @@ namespace NHibernateBootstrap
         {
             Remove(Find(id));
         }
+
+        public void Commit()
+        {
+            Uow.Commit();
+        }
     }
 }

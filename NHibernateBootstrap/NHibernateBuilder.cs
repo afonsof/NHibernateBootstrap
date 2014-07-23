@@ -14,9 +14,9 @@ namespace NHibernateBootstrap
         private static Configuration _configuration;
         private static ISessionFactory _sessionFactory;
 
-        public static void Setup<T>(IPersistenceConfigurer config, bool updateSchema = false)
+        public static void Setup<T>(IPersistenceConfigurer config, string namespacePath = null, bool updateSchema = false)
         {
-            _model = AutoMap.AssemblyOf<T>().Where(type => typeof(IHaveId).IsAssignableFrom(type));
+            _model = AutoMap.AssemblyOf<T>().Where(type => typeof(IHaveId).IsAssignableFrom(type) && (namespacePath == null || type.FullName.StartsWith(namespacePath)));
             _model.OverrideAll(map => map.IgnoreProperties(x => x.CanWrite == false));
 
             var fluentConfiguration = Fluently.Configure().
